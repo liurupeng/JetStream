@@ -171,14 +171,15 @@ def load_sharegpt_dataset(
   return dataset
 
 
-def load_openorca_dataset_pkl():
+def load_openorca_dataset_pkl(dataset_path):
   # read pickle file
-  samples = pandas.read_pickle(
-      os.path.join(
-          os.path.dirname(os.path.relpath(__file__)),
-          "open_orca_gpt4_tokenized_llama.calibration_1000.pkl",
+  if not dataset_path:
+    dataset_path = os.path.join(
+      os.path.dirname(os.path.relpath(__file__)),
+      "datasets",
+      "open_orca_gpt4_tokenized_llama.calibration_1000.pkl",
       )
-  )
+  samples = pandas.read_pickle(dataset_path)
 
   prompts = []
   outputs = []
@@ -557,7 +558,7 @@ def main(args: argparse.Namespace):
   else:
     dataset = []
     if args.dataset == "openorca":
-      dataset = load_openorca_dataset_pkl()
+      dataset = load_openorca_dataset_pkl(args.dataset_path)
     elif args.dataset == "sharegpt":
       dataset = load_sharegpt_dataset(
           args.dataset_path,

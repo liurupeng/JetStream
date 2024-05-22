@@ -93,7 +93,7 @@ python JetStream/benchmarks/benchmark_serving.py   \
 If you used `--save-request-outputs`, you can separately evaluate against the generated outputs.
 
 ```
-python eval_accuracy.py outputs.json
+python eval_accuracy.py --output_path outputs.json
 
 ```
 
@@ -101,4 +101,4 @@ With openorca dataset and llama2-chat models (used by MLPerf), here are the refe
 ```
 llama2-7b-chat {'rouge1': 42.0706, 'rouge2': 19.8021, 'rougeL': 26.8474, 'rougeLsum': 39.5952, 'gen_len': 1146679, 'gen_num': 998}
 llama2-70b-chat {'rouge1': 44.4312, 'rouge2': 22.0352, 'rougeL': 28.6162}
-``` 
+```
