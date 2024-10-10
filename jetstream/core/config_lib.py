@@ -123,12 +123,6 @@ def get_engines(
   Devices are popped in order!
   """
   # Now, we need to split devices by slice due to TPU backend config.
-  logging.info("prefill slices")
-  logging.info(*server_config.prefill_slices)
-  logging.info("decode slices")
-  logging.info(*server_config.generate_slices)
-  logging.info("interleave slices")
-  logging.info(*server_config.interleaved_slices)
   slices: list[int] = [
       slice_to_num_chips(s)
       for s in list(server_config.prefill_slices)
