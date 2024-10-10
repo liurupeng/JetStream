@@ -16,6 +16,7 @@
 
 import dataclasses
 import functools
+import logging
 from typing import Any, Callable, List, Tuple, Type
 from numpy import uint16
 
@@ -89,6 +90,7 @@ def slice_to_num_chips(s: str) -> int:
   # Account for the case where it is written 'tpu=8' for compatibility.
   delim = "-" if "-" in s else "="
   # TODO: Support more accelerator type check.
+  logging.info("accelerator type %s", delim)
   accelerator_type, num_devices = s.split(delim)
   return int(num_devices) if accelerator_type != "v4" else int(num_devices) // 2
 
