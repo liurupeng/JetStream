@@ -90,7 +90,7 @@ def slice_to_num_chips(s: str) -> int:
   # Account for the case where it is written 'tpu=8' for compatibility.
   delim = "-" if "-" in s else "="
   # TODO: Support more accelerator type check.
-  logging.info("accelerator type %s", delim)
+  logging.info("accelerator type %s", s)
   accelerator_type, num_devices = s.split(delim)
   return int(num_devices) if accelerator_type != "v4" else int(num_devices) // 2
 
@@ -123,6 +123,12 @@ def get_engines(
   Devices are popped in order!
   """
   # Now, we need to split devices by slice due to TPU backend config.
+  logging.info("prefill slices")
+  logging.info(*server_config.prefill_slices)
+  logging.info("decode slices")
+  logging.info(*server_config.generate_slices)
+  logging.info("interleave slices")
+  logging.info(*server_config.interleaved_slices)
   slices: list[int] = [
       slice_to_num_chips(s)
       for s in list(server_config.prefill_slices)
