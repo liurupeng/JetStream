@@ -220,11 +220,19 @@ def process_result_tokens(
           break
         else:
           if not is_client_side_tokenization:
+            text_tok = ""
             if isinstance(tokenizer, SentencePieceTokenizer):
-              text_so_far.append(tokenizer.decode([tok_id], is_streaming=True))
+              text_tok = tokenizer.decode([tok_id], is_streaming=True)
+              text_so_far.append(text_tok)
             else:
-              text_so_far.append(tokenizer.decode([tok_id]))
+              text_tok = tokenizer.decode([tok_id])
+              text_so_far.append(text_tok)
           tok_id_so_far.append(tok_id)
+          logging.info(
+              "Detokenize tok_id %s and text token is %s",
+              tok_id,
+              text_tok,
+          )
     return_samples.append(
         ReturnSample(text=text_so_far, token_ids=tok_id_so_far)
     )
