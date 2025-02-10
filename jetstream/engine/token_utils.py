@@ -228,11 +228,7 @@ def process_result_tokens(
               text_tok = tokenizer.decode([tok_id])
               text_so_far.append(text_tok)
           tok_id_so_far.append(tok_id)
-          logging.info(
-              "Detokenize tok_id %s and text token is %s",
-              tok_id,
-              text_tok,
-          )
+          print(f"Detokenize tok_id {tok_id} encountered an error: {text_tok}")
     return_samples.append(
         ReturnSample(text=text_so_far, token_ids=tok_id_so_far)
     )

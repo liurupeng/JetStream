@@ -805,7 +805,7 @@ class Driver:
         i: None for i in range(my_generate_engine.max_concurrent_decodes)
     }
     while self.live:
-      logging.info("step1")
+      print(f"step1")
       data = my_detokenize_backlog.get(block=True)
       if data is None:
         break
@@ -847,7 +847,7 @@ class Driver:
 
         for slot, request in my_live_requests.items():
           if request is not None:
-            logging.info("step2")
+            print(f"step2")
             results, complete = token_utils.process_result_tokens(
                 tokenizer=tokenizer,
                 slot=slot,
