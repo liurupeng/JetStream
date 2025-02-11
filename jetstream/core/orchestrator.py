@@ -750,7 +750,7 @@ class Driver:
             slot,
             generate_timestep,
         )
-
+        print(f"calling insert")
         decode_state = generate_engine.insert(
             new_request.prefill_result, decode_state, slot=slot
         )
