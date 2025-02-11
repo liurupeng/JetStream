@@ -771,6 +771,7 @@ class Driver:
       decode_state, sampled_tokens = generate_engine.generate(
           generate_params, decode_state
       )
+      print(f"generated token `{sampled_tokens.get_result_at_slot(slot).tokens.item()}` in slot {slot}")
       sampled_tokens.copy_to_host_async()
       # Respond to detokenization backpressure.
       my_detokenize_backlog.put((generate_timestep, sampled_tokens), block=True)
@@ -805,7 +806,6 @@ class Driver:
         i: None for i in range(my_generate_engine.max_concurrent_decodes)
     }
     while self.live:
-      print(f"step1")
       data = my_detokenize_backlog.get(block=True)
       if data is None:
         break
@@ -847,7 +847,6 @@ class Driver:
 
         for slot, request in my_live_requests.items():
           if request is not None:
-            print(f"step2")
             results, complete = token_utils.process_result_tokens(
                 tokenizer=tokenizer,
                 slot=slot,
