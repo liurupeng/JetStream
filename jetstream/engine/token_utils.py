@@ -207,6 +207,7 @@ def process_result_tokens(
       for spec_idx in range(speculations):
         tok_id = slot_tokens[idx, spec_idx].item()
         valid = slot_valid[idx, spec_idx].item()
+        print(f"valid {valid}")
         if debug:
           logging.info(
               "Sample idx: %d Speculation idx: %d Token: %d",

@@ -694,6 +694,7 @@ class Driver:
 
         try:
           slot = my_slots.get(block=False)
+          #print(f"new slot found {slot}")
           # Found a slot, now see if we can fill it.
         except queue.Empty:
           # Exit this while loop as we have no free slots to insert into.
@@ -750,10 +751,11 @@ class Driver:
             slot,
             generate_timestep,
         )
-        print(f"calling insert")
         decode_state = generate_engine.insert(
             new_request.prefill_result, decode_state, slot=slot
         )
+        #jax.debug.print("logits: {}, next_pos: {}, generated_tokens: {}, tokens: {}", decode_state["logits"][0][0], decode_state["next_pos"][0], decode_state["generated_tokens"][0], decode_state["tokens"][0])
+        #print(f'logits: {decode_state["logits"][slot][0]}, next_pos: {decode_state["next_pos"][slot]}, generated_tokens: {decode_state["generated_tokens"][slot]}, tokens: {decode_state["tokens"][slot]}')
         del new_request.prefill_result
         new_request.generate_timestep_added = generate_timestep
         new_request.complete = np.zeros(
@@ -771,7 +773,8 @@ class Driver:
       decode_state, sampled_tokens = generate_engine.generate(
           generate_params, decode_state
       )
-      print(f"generated token `{sampled_tokens.get_result_at_slot(slot).tokens.item()}` in slot {slot}")
+      #print(f"generated token `{sampled_tokens.get_result_at_slot(slot).tokens.item()}` in slot {slot}")
+      print(f"sampled tokens {sampled_tokens}")
       sampled_tokens.copy_to_host_async()
       # Respond to detokenization backpressure.
       my_detokenize_backlog.put((generate_timestep, sampled_tokens), block=True)
@@ -841,11 +844,13 @@ class Driver:
       elif isinstance(data[1], engine_api.ResultTokens):
         # We want to detokenize them.
         generate_timestep_added, result_tokens = data
+        print(f"generate_timestep_added: {generate_timestep_added}")
         # Disable attribute error because pytype doesn't know this
         # is a result tokens, and we can't annotate the tuple.
         result_tokens = result_tokens.convert_to_numpy()
 
         for slot, request in my_live_requests.items():
+          #print(f"check slot, active request {slot}, {request.max_tokens}, {request.complete}")
           if request is not None:
             results, complete = token_utils.process_result_tokens(
                 tokenizer=tokenizer,
@@ -906,6 +911,8 @@ class Driver:
       else:
         # We want to update a slot with the new channel.
         slot, active_request = data
+
+        print(f"detok thread {slot}, {active_request}")
         my_live_requests[slot] = active_request
 
 
@@ -1008,6 +1015,7 @@ class LLMOrchestrator(jetstream_pb2_grpc.OrchestratorServicer):
     prefill_content, is_client_side_tokenization = self._get_prefill_content(
         request
     )
+    print(f"place request")
     # Wrap request as an ActiveRequest.
     active_request = ActiveRequest(
         max_tokens=request.max_tokens,
