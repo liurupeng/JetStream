@@ -87,6 +87,7 @@ import threading
 import time
 import traceback
 from typing import Any, AsyncIterator, Optional, Tuple, cast, List
+import uuid
 
 import grpc
 import jax
@@ -140,6 +141,7 @@ class ActiveRequest:
   """Current state of the driver."""
 
   #################### Information relevant for generation #####################
+  request_id: uuid.UUID
   max_tokens: int
   # We keep prefill and decode information together in the same object so that
   # there is less indirection about where this return channel is.
@@ -1016,8 +1018,10 @@ class LLMOrchestrator(jetstream_pb2_grpc.OrchestratorServicer):
         request
     )
     print(f"place request")
+    uid = uuid.uuid4()
     # Wrap request as an ActiveRequest.
     active_request = ActiveRequest(
+        request_id=uid,
         max_tokens=request.max_tokens,
         prefill_content=prefill_content,
         is_client_side_tokenization=is_client_side_tokenization,
@@ -1027,6 +1031,7 @@ class LLMOrchestrator(jetstream_pb2_grpc.OrchestratorServicer):
             prefill_enqueue_time=time.perf_counter(),
         ),
     )
+    print(f"the active request is {active_request}")
     # The first stage is being prefilled, all other stages are handled
     # inside the driver (transfer, generate*N, detokenize).
     try:

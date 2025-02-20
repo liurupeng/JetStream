@@ -20,6 +20,7 @@ could want to call, enabling interleaved (continuous batching) inference.
 
 import abc
 from typing import Any, Optional, Tuple, Union, Callable
+import uuid
 
 from flax import struct
 import jax
@@ -143,6 +144,7 @@ class Engine(abc.ABC):
       padded_tokens: jax.Array,
       true_length: int,
       sampler: Optional[Callable[[Any], Any]] = None,
+      request_id: uuid.UUID = None,
   ) -> Tuple[Prefix, ResultTokens]:
     """Computes a kv-cache for a set of tokens conditional on existing cache.
 
@@ -181,6 +183,7 @@ class Engine(abc.ABC):
       prefix: Prefix,
       decode_state: DecodeState,
       slot: int,
+      request_id: uuid.UUID,
   ) -> DecodeState:
     """Adds `new_request` into `caches` at 'slot'.
 
